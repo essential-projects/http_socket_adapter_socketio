@@ -58,7 +58,7 @@ export class SocketioHttpSocketAdapter implements IHttpSocketAdapter, IEndpointS
 
     // TODO: The socket.io typings are currently very much outdated and do not contain the "handlePreflightRequest" option.
     // It is still functional, though.
-    this._socketServer = socketIo(this.httpServer as any, <any>{
+    this._socketServer = socketIo(this.httpServer as any, <any> {
       handlePreflightRequest: (req: any, res: any): void => {
         // tslint:disable-next-line:no-magic-numbers
         res.writeHead(200, socketIoHeaders);
@@ -99,10 +99,12 @@ export class SocketioHttpSocketAdapter implements IHttpSocketAdapter, IEndpointS
 
   public onConnect(callback: OnConnectCallback): void {
 
-    this._socketServer.on('connect', async (socket: SocketIO.Socket) => {
+    this._socketServer.on('connect', async(socket: SocketIO.Socket) => {
 
-      const token: string = socket.handshake.headers['authorization'];
-      const identity: IIdentity = await this._identityService.getIdentity(token);
+      const bearerToken: string = socket.handshake.headers['authorization'];
+      const jwtToken: string = bearerToken.substr('Bearer '.length);
+
+      const identity: IIdentity = await this._identityService.getIdentity(jwtToken);
 
       socket.client['identity'] = identity;
 
