@@ -1,5 +1,6 @@
+import {IIdentity} from '@essential-projects/iam_contracts';
+import {ISocketClient, MessageCallback, OnConnectCallback} from '@essential-projects/websocket_contracts';
 import {Logger} from 'loggerhythm';
-import {ISocketClient, MessageCallback} from '@essential-projects/websocket_contracts';
 
 const logger: Logger = Logger.createLogger('http:socket.io_client');
 
@@ -24,9 +25,17 @@ export class SocketIoSocketClient implements ISocketClient {
 
   private _initializeHandlers(): void {
 
-    this.socket.on('disconnect', async (reason: any) => {
+    this.socket.on('disconnect', async(reason: any) => {
       this._onDisconnectCallback();
       logger.info(`Client with socket id "${this.socket.id} disconnected."`);
+    });
+  }
+
+  public onConnect(callback: OnConnectCallback): void {
+    this.socket.on('connect', async(socket: SocketIO.Socket) => {
+      const socketClient: ISocketClient = new SocketIoSocketClient(socket);
+      const identity: IIdentity = socket.client['identity'];
+      callback(socketClient, identity);
     });
   }
 

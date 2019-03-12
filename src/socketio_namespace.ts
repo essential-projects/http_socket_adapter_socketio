@@ -1,5 +1,5 @@
 import {IIdentity} from '@essential-projects/iam_contracts';
-import {ISocketClient, OnConnectCallback, IEndpointSocketScope} from '@essential-projects/websocket_contracts';
+import {IEndpointSocketScope, ISocketClient, OnConnectCallback} from '@essential-projects/websocket_contracts';
 import {Logger} from 'loggerhythm';
 import {SocketIoSocketClient} from './socket_client';
 
@@ -24,7 +24,7 @@ export class SocketIoNamespace implements IEndpointSocketScope {
   }
 
   public onConnect(callback: OnConnectCallback): void {
-    this.namespace.on('connect', async (socket: SocketIO.Socket) => {
+    this.namespace.on('connect', async(socket: SocketIO.Socket) => {
 
       logger.info(`Client with socket id "${socket.id} connected."`);
 
